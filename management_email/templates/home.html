@@ -1,10 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Главная</title>
-</head>
-<body>
+{% extends 'management_email/base.html' %}
 
-</body>
-</html>
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row text-center">
+        <p>Сервис управления почтовыми рассылками.</p>
+    </div>
+</div>
+{% endblock%}
