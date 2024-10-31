@@ -1,0 +1,15 @@
+{% extends 'management_email/base.html' %}
+
+{% block title %}Сообщение{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+        <h1 class="mb-4">Тема письма{{ message.heading }}</h1>
+        <p>Текст письма{{ message.content }}</p>
+        <a href="{% url 'message_update' message.pk %}" class="btn btn-secondary">Редактировать</a>
+        <a href="{% url 'message_delete' message.pk %}" class="btn btn-danger">Удалить</a>
+        <a href="{% url 'message_list' %}" class="btn btn-primary">Вернуться к списку</a>
+    </div>
+
+{% endblock %}
