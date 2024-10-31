@@ -1,10 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'management_email/base.html' %}
 
-</body>
-</html>
+{% block title %}Удалить рассылку{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row text-center">
+
+        <div class="col-12">
+            <form method="POST" enctype="multipart/form-data">
+                <div class="card mb-4 box-shadow">
+                    <div class="card-header">
+
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Тема письма:{{ message.heading }}</h5>
+                        <p>Текст письма: {{ mailing.message }}</p>
+                        {% csrf_token %}
+                        <h5 class="card-title">Вы действительно хотите удалить "{{ message.heading }}"?</h5>
+                        <button type="submit" class="btn btn-lg btn-block btn-outline-danger">Подтвердить</button>
+                        <a type="button" class="btn btn-outline-primary" href="{% url 'management_email:mailing_list' %}">Отменить</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

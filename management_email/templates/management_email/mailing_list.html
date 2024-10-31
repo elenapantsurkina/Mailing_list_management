@@ -1,10 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'management_email/base.html' %}
 
-</body>
-</html>
+{% block title %}Список рассылок{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="mb-4">Список рассылок</h1>
+        <a href="{% url 'mailing_create' %}" class="btn btn-primary mb-3">Создать новую рассылку</a>
+        <ul class="list-group">
+            {% for mailing in mailings %}
+                <li class="list-group-item">
+                    <a href="{% url 'mailing_detail' message.pk %}">Статус рассылки {{mailing.status}}</a>
+                    <a href="{% url 'mailing_update' message.pk %}" class="btn btn-sm btn-secondary ml-3">Редактировать</a>
+                    <a href="{% url 'mailing_delete' message.pk %}" class="btn btn-sm btn-danger ml-1">Удалить</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
