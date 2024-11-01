@@ -5,13 +5,13 @@
 {% block content %}
     <div class="container mt-5">
         <h1 class="mb-4">Список рассылок</h1>
-        <a href="{% url 'mailing_create' %}" class="btn btn-primary mb-3">Создать новую рассылку</a>
+        <a href="{% url 'management_email:mailing_create' %}" class="btn btn-primary mb-3">Создать новую рассылку</a>
         <ul class="list-group">
             {% for mailing in mailings %}
                 <li class="list-group-item">
-                    <a href="{% url 'mailing_detail' message.pk %}">Статус рассылки {{mailing.status}}</a>
-                    <a href="{% url 'mailing_update' message.pk %}" class="btn btn-sm btn-secondary ml-3">Редактировать</a>
-                    <a href="{% url 'mailing_delete' message.pk %}" class="btn btn-sm btn-danger ml-1">Удалить</a>
+                    <a href="{% url 'management_email:mailing_detail' message.pk %}">Статус рассылки {{mailing.status}}</a>
+                    <a href="{% url 'management_email:mailing_update' message.pk %}" class="btn btn-sm btn-secondary ml-3">Редактировать</a>
+                    <a href="{% url 'management_email:mailing_delete' message.pk %}" class="btn btn-sm btn-danger ml-1">Удалить</a>
                 </li>
             {% endfor %}
         </ul>

@@ -5,13 +5,13 @@
 {% block content %}
     <div class="container mt-5">
         <h1 class="mb-4">Список получателей рассылок</h1>
-        <a href="{% url 'customers_create' %}" class="btn btn-primary mb-3">Создать новый объект</a>
+        <a href="{% url 'management_email:customers_create' %}" class="btn btn-primary mb-3">Создать новый объект</a>
         <ul class="list-group">
             {% for customers in customerss %}
                 <li class="list-group-item">
-                    <a href="{% url 'customers_detail' customers.pk %}">{{ customers.name }}</a>
-                    <a href="{% url 'customers_update' customers.pk %}" class="btn btn-sm btn-secondary ml-3">Редактировать</a>
-                    <a href="{% url 'customers_delete' customers.pk %}" class="btn btn-sm btn-danger ml-1">Удалить</a>
+                    <a href="{% url 'management_email:customers_detail' customers.pk %}">{{ customers.name }}</a>
+                    <a href="{% url 'management_email:customers_update' customers.pk %}" class="btn btn-sm btn-secondary ml-3">Редактировать</a>
+                    <a href="{% url 'management_email:customers_delete' customers.pk %}" class="btn btn-sm btn-danger ml-1">Удалить</a>
                 </li>
             {% endfor %}
         </ul>

@@ -8,9 +8,9 @@
         <h1 class="mb-4">ФИО:{{ customers.name }}</h1>
         <p>Email:{{ customers.email }}</p>
         <p>Комментарий: {{ customers.comment }}</p>
-        <a href="{% url 'customers_update' customers.pk %}" class="btn btn-secondary">Редактировать</a>
-        <a href="{% url 'customers_delete' customers.pk %}" class="btn btn-danger">Удалить</a>
-        <a href="{% url 'customers_list' %}" class="btn btn-primary">Вернуться к списку</a>
+        <a href="{% url 'management_email:customers_update' customers.pk %}" class="btn btn-secondary">Редактировать</a>
+        <a href="{% url 'management_email:customers_delete' customers.pk %}" class="btn btn-danger">Удалить</a>
+        <a href="{% url 'management_email:customers_list' %}" class="btn btn-primary">Вернуться к списку</a>
     </div>
 
 {% endblock %}
