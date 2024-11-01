@@ -10,6 +10,6 @@ admin.site.register(Mailingattempt)
 
 @admin.register(Mailing)
 class Mailingadmin(admin.ModelAdmin):
-    list_display = ('date_first', 'date_end', 'status', 'message')
-    list_filter = ('status',)
-    search_fields = ('status',)
+    list_display = ("date_first", "date_end", "status", "message")
+    list_filter = ("status",)
+    search_fields = ("status",)
