@@ -9,4 +9,5 @@ urlpatterns = [
             ("management_email.urls", "management_email"), namespace="management_email"
         ),
     ),
+    path("users/", include("users.urls", namespace="users")),
 ]
