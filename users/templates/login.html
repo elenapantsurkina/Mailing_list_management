@@ -1,6 +1,7 @@
 {% extends 'management_email/base.html' %}
 
 {% block content %}
+<h1>Авторизация</h1>
 
 <div class="container mt-5">
 
@@ -8,6 +9,8 @@
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn btn-primary">Войти</button>
+
+            <p><a href="{% url 'users:password_reset' %}">Забыли пароль?</a></p>
 
         </form>
     </div>
