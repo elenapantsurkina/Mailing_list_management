@@ -7,6 +7,7 @@ from django.shortcuts import render
 from django.core.mail import send_mail
 from django.utils import timezone
 from django.db.models import Count
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 def home(request):
@@ -23,11 +24,18 @@ def home(request):
     return render(request, "management_email/home.html", context)
 
 
-class CustomersCreateView(CreateView):
+class CustomersCreateView(CreateView, LoginRequiredMixin):
     model = Customers
     form_class = CustomersForm
     template_name = "management_email/customers_form.html"
     success_url = reverse_lazy("management_email:customers_list")
+
+    def form_valid(self, form):
+        customer = form.save()
+        user = self.request.user
+        customer.owner = user
+        customer.save()
+        return super().form_valid(form)
 
 
 class CustomersListView(ListView):
@@ -88,6 +96,13 @@ class MailingCreateView(CreateView):
     form_class = MailingForm
     template_name = "management_email/mailing_form.html"
     success_url = reverse_lazy("management_email:mailing_list")
+
+    def form_valid(self, form):
+        mailing = form.save()
+        user = self.request.user
+        mailing.owner = user
+        mailing.save()
+        return super().form_valid(form)
 
 
 class MailingListView(ListView):

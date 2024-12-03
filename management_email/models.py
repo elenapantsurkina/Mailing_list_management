@@ -1,5 +1,7 @@
 from django.db import models
 
+from users.models import User
+
 
 class Customers(models.Model):
     email = models.EmailField(
@@ -9,6 +11,8 @@ class Customers(models.Model):
         max_length=100, verbose_name="Ф.И.О.", help_text="Введите Фамилию Имя Очество"
     )
     comment = models.TextField(blank=True, null=True, help_text="Добавьте комментарии")
+    owner = models.ForeignKey(User, verbose_name="Владелец получателя рассылки",
+                              help_text="Укажите владельца получателя рассылки", blank=True, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return f"{self.name} {self.email}"
@@ -51,6 +55,8 @@ class Mailing(models.Model):
         Message, on_delete=models.CASCADE, related_name="messages"
     )
     customers = models.ManyToManyField(Customers)
+    owner = models.ForeignKey(User, verbose_name="Владелец рассылки",
+                              help_text="Укажите владельца рассылки", blank=True, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return f"{self.message} - {self.status}"

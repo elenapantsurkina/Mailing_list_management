@@ -1,0 +1,15 @@
+{% extends 'management_email/base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Войти</button>
+            <p><a href="{% url 'users:password_reset' %}">Забыли пароль?</a></p>
+
+        </form>
+    </div>
+{% endblock%}

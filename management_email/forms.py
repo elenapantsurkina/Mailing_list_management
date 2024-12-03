@@ -16,7 +16,7 @@ class StyleFormMixin:
 class CustomersForm(StyleFormMixin, ModelForm):
     class Meta:
         model = Customers
-        fields = "__all__"
+        exclude = ("owner",)
 
 
 class MailingForm(StyleFormMixin, ModelForm):
