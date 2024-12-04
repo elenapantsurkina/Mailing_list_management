@@ -1,5 +1,5 @@
 from audioop import reverse
-
+from django.contrib.auth.decorators import login_required
 from django.views.generic import CreateView
 from users.models import User
 from users.forms import UserRegisterForm
@@ -7,7 +7,9 @@ from django.urls import reverse_lazy
 import secrets
 from django.core.mail import send_mail
 from config.settings import EMAIL_HOST_USER
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
+from management_email.models import Mailingattempt
+from .services import get_mailing_statistics
 
 
 class UserCreateView(CreateView):
@@ -37,3 +39,12 @@ def email_verification(request, token):
     user.is_active = True
     user.save()
     return redirect(reverse("users:login"))
+
+
+@login_required
+def mailing_attempts_view(request):
+    mailingattempts = Mailingattempt.objects.filter(mailing__owner=request.user)
+    statistics = get_mailing_statistics(request.user)  # Вызовите функцию
+
+    return render(request, 'mailingattempt_list.html',
+                  {'mailingattempts': mailingattempts, 'statistics': statistics})
