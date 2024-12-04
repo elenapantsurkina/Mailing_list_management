@@ -22,6 +22,7 @@ from management_email.views import (
     MailingUpdateView,
     MailingDeleteView,
 )
+from management_email.views import MailingattemptListView
 
 
 app_name = ManagementEmailConfig.name
@@ -98,5 +99,8 @@ urlpatterns = [
         "management_email/mailing_delete/<int:pk>/",
         MailingDeleteView.as_view(),
         name="mailing_delete",
+    ),
+    path(
+        "management_email/mailingattempt_list/", MailingattemptListView.as_view(), name="mailingattempt_list"
     ),
 ]

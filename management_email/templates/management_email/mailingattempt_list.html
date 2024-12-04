@@ -1,0 +1,47 @@
+{% extends 'management_email/base.html' %}
+
+{% block title %}Список рассылок{% endblock %}
+
+{% block content %}
+
+<head>
+<style>
+table, td, th {
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  padding: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<h3 class="text-center w-100">Список попыток рассылок</h3>
+
+<table>
+    <tr>
+        <th scope="col" >Дата и время попытки</th>
+        <th scope="col">Статус</th>
+        <th scope="col">Ответ почтового сервера</th>
+        <th scope="col">Рассылка</th>
+    </tr>
+        {% for mailingattempt in mailingattempts %}
+        <tr>
+            <td scope="col" >{{mailingattempt.date_attempt}}</td>
+            <td scope="col">{{mailingattempt.status}}</td>
+            <td scope="col">{{mailingattempt.mail_server_response}}</td>
+            <td scope="col">{{mailingattempt.mailing}}</td>
+        </tr>
+        {% endfor %}
+</table>
+</body>
+
+{% endblock %}

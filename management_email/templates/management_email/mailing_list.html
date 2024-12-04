@@ -3,19 +3,62 @@
 {% block title %}Список рассылок{% endblock %}
 
 {% block content %}
-    <div class="container mt-5">
-        <h1 class="mb-4">Список рассылок</h1>
-        {% if user.is_authenticated %}
+
+<head>
+<style>
+table, td, th {
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  padding: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<h3 class="text-center w-100">Список рассылок</h3>
+
+    {% if user.is_authenticated %}
+    <div class="text-center mb-3">
+
         <a href="{% url 'management_email:mailing_create' %}" class="btn btn-primary mb-3">Создать новую рассылку</a>
+
         {% endif%}
-        <ul class="list-group">
-            {% for mailing in mailings %}
-                <li class="list-group-item">
-                    <a href="{% url 'management_email:mailing_detail' message.pk %}">Статус рассылки {{mailing.status}}</a>
-                    <a href="{% url 'management_email:mailing_update' message.pk %}" class="btn btn-sm btn-secondary ml-3">Редактировать</a>
-                    <a href="{% url 'management_email:mailing_delete' message.pk %}" class="btn btn-sm btn-danger ml-1">Удалить</a>
-                </li>
-            {% endfor %}
-        </ul>
+
     </div>
+
+<table>
+    <tr>
+        <th scope="col" >Дата и время первой отправки</th>
+        <th scope="col">Дата и время окончания отправки</th>
+        <th scope="col">Статус</th>
+        <th scope="col">Сообщение</th>
+        <th scope="col">Получатели</th>
+        <th scope="col">Действия</th>
+    </tr>
+        {% for mailing in mailings %}
+        <tr>
+            <td scope="col" >{{mailing.date_first}}</td>
+            <td scope="col">{{mailing.date_end}}</td>
+            <td scope="col">{{mailing.status}}</td>
+            <td scope="col">{{mailing.message}}</td>
+            <td scope="col">{{mailing.customers}}</td>
+            <td>
+                <a href="{% url 'management_email:mailing_detail' message.pk %}" class="btn btn-sm btn-secondary ml-3">Просмотр</a>
+                <a href="{% url 'management_email:mailing_update' message.pk %}" class="btn btn-sm btn-secondary ml-3">Редактировать</a>
+                <a href="{% url 'management_email:mailing_delete' message.pk %}" class="btn btn-sm btn-danger ml-1">Удалить</a>
+            </td>
+        </tr>
+        {% endfor %}
+</table>
+</body>
+
 {% endblock %}

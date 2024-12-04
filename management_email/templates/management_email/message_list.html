@@ -3,39 +3,60 @@
 {% block title %}Список сообщений{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h3>Список сообщений</h3>
-        <a href="{% url 'management_email:message_create' %}" class="btn btn-primary mb-3">Создать новое сообщение</a>
+<head>
+<style>
+table, td, th {
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  padding: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<h3 class="text-center w-100">Список сообщений</h3>
+
+<div class="text-center mb-3">
+
+    <a href="{% url 'management_email:message_create' %}" class="btn btn-primary mb-3">Создать новое сообщение</a>
+
 </div>
 
-<div class="table-responsive small">
-    <table class="table table-striped table-sm">
-        <thead>
-        <tr>
+<table>
+    <tr>
+        <th scope="col" >Тема письма</th>
+        <th scope="col">Текст письма</th>
+    </tr>
 
-            <th scope="col" >Тема письма</th>
-            <th scope="col">Текст письма</th>
-        </tr>
-        </thead>
-        <tbody>
         {% for message in messages %}
-        <tr>
 
-            <td style="width: 20vh;">{{ message.heading }}</td>
-            <td>{{ message.content }}</td>
+    <tr>
 
-            <td class="text-end" style="width: 20vh;">
+        <td style="width: 20vh;">{{ message.heading }}</td>
+        <td>{{ message.content }}</td>
 
-                <a href="{% url 'management_email:message_update' message.pk %}" class="btn btn-sm btn-secondary ml-3">Редактировать</a>
-                <a href="{% url 'management_email:message_delete' message.pk %}" class="btn btn-sm btn-danger ml-1">Удалить</a>
+        <td class="text-end" style="width: 20vh;">
 
-            </td>
+            <a href="{% url 'management_email:message_update' message.pk %}" class="btn btn-sm btn-secondary ml-3">Редактировать</a>
+            <a href="{% url 'management_email:message_delete' message.pk %}" class="btn btn-sm btn-danger ml-1">Удалить</a>
 
-            <td class="text-end" style="width: 20vh;"></td>
+        </td>
 
-        </tr>
+        <td class="text-end" style="width: 20vh;"></td>
+
+    </tr>
         {% endfor %}
-        </tbody>
-    </table>
-</div>
+
+</table>
+</body>
+
 {% endblock %}

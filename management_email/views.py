@@ -130,6 +130,7 @@ class MailingDeleteView(DeleteView):
 
 class MailingattemptListView(ListView):
     model = Mailingattempt
+    template_name = "management_email/mailingattempt_list.html"
 
     def send_mail_for_clients(mailing_id):
         # Получаем объект рассылки по идентификатору
