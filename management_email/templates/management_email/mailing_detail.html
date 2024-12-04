@@ -11,6 +11,12 @@
         <p>Дата и время окончания отправки {{ mailing.date_end }}</p>
         <p>Получатель рассылки {{ mailing.customers }}</p>
         <p>Текст письма{{ mailing.message }}</p>
+
+        <form method="post" action="{% url 'management_email:send_mailing' object.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">Отправить рассылку</button>
+        </form>
+
         <a href="{% url 'management_email:mailing_update' mailing.pk %}" class="btn btn-secondary">Редактировать</a>
         <a href="{% url 'management_email:mailing_delete' mailing.pk %}" class="btn btn-danger">Удалить</a>
         <a href="{% url 'management_email:mailing_list' %}" class="btn btn-primary">Вернуться к списку</a>

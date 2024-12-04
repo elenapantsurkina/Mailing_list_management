@@ -6,8 +6,11 @@ from .forms import CustomersForm, MailingForm, MessageForm
 from django.shortcuts import render
 from django.core.mail import send_mail
 from django.utils import timezone
-from django.db.models import Count
+
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
 
 
 def home(request):
@@ -126,6 +129,18 @@ class MailingDeleteView(DeleteView):
     model = Mailing
     template_name = "management_email/mailing_confirm_delete.html"
     success_url = reverse_lazy("management_email:mailing_list")
+
+
+class SendMailingView(View):
+    # реализуем отправку через интерфейс пользователя
+    def post(self, request, pk):
+        mailing = get_object_or_404(Mailing, pk=pk)
+        mailing.send_mailing()  # Вызов метода для отправки
+
+        mailing.status = "запущена"  # Обновляем статус рассылки
+        mailing.save()  # Сохраняем изменения в модели
+
+        return redirect(reverse("management_email:mailing_list"))  # Перенаправление после отправки
 
 
 class MailingattemptListView(ListView):

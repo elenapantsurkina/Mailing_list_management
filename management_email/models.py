@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import User
+from django.core.mail import send_mail
 
 
 class Customers(models.Model):
@@ -11,7 +12,8 @@ class Customers(models.Model):
     )
     comment = models.TextField(blank=True, null=True, help_text="Добавьте комментарии")
     owner = models.ForeignKey(User, verbose_name="Владелец получателя рассылки",
-                              help_text="Укажите владельца получателя рассылки", blank=True, null=True, on_delete=models.SET_NULL)
+                              help_text="Укажите владельца получателя рассылки", blank=True, null=True,
+                              on_delete=models.SET_NULL)
 
     def __str__(self):
         return f"{self.name} {self.email}"
@@ -63,6 +65,21 @@ class Mailing(models.Model):
     class Meta:
         verbose_name = "Рассылка"
         verbose_name_plural = "Рассылки"
+
+    def send_mailing(self):
+        # Получаем тему и текст сообщения из модели Message
+        subject = self.message.heading  # выбираем поле heading из Message
+        content = self.message.content  # выбираем поле content из Message
+
+        # Получаем всех клиентов, связанных с этой рассылкой
+        recipients = [customer.email for customer in self.customers.all()]  # извлекаем email из связанных Customers
+
+        # Отправка писем
+        send_mail(subject, content, 'from@example.com', recipients)
+
+        # Обновление статуса рассылки
+        self.status = "запущена"
+        self.save()
 
 
 class Mailingattempt(models.Model):

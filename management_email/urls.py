@@ -20,8 +20,7 @@ from management_email.views import (
     MailingListView,
     MailingDetailView,
     MailingUpdateView,
-    MailingDeleteView,
-)
+    MailingDeleteView, SendMailingView)
 from management_email.views import MailingattemptListView
 
 
@@ -100,6 +99,7 @@ urlpatterns = [
         MailingDeleteView.as_view(),
         name="mailing_delete",
     ),
+    path('mailings/<int:pk>/send/', SendMailingView.as_view(), name='send_mailing'),
     path(
         "management_email/mailingattempt_list/", MailingattemptListView.as_view(), name="mailingattempt_list"
     ),
