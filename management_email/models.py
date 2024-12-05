@@ -65,6 +65,10 @@ class Mailing(models.Model):
     class Meta:
         verbose_name = "Рассылка"
         verbose_name_plural = "Рассылки"
+        permissions = [
+            ("can_cancel_mailing", "Can cancel mailing"),
+            ("can_blok_user", "Can blok user"),
+        ]
 
     def send_mailing(self):
         # Получаем тему и текст сообщения из модели Message

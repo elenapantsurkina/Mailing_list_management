@@ -7,7 +7,8 @@ from django.shortcuts import render
 from django.core.mail import send_mail
 from django.utils import timezone
 
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.views import View
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -41,14 +42,26 @@ class CustomersCreateView(CreateView, LoginRequiredMixin):
         return super().form_valid(form)
 
 
-class CustomersListView(ListView):
+class CustomersListView(ListView, LoginRequiredMixin):
     model = Customers
     template_name = "management_email/customers_list.html"
 
+    def get_queryset(self):
+        # Проверяем, является ли пользователь менеджером или автором клиента
+        if self.request.user.is_staff:  # Менеджеры имеют доступ ко всем клиентам
+            return Customers.objects.all()
+        return Customers.objects.filter(owner=self.request.user)  # Показываем только клиентов пользователя
 
-class CustomersDetailView(DetailView):
+
+class CustomersDetailView(DetailView, LoginRequiredMixin):
     model = Customers
     template_name = "management_email/customers_detail.html"
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        if not (self.request.user.is_staff or obj.owner == self.request.user):
+            raise PermissionDenied  # Отказать доступ, если не менеджер или не владелец
+        return obj
 
 
 class CustomersUpdateView(UpdateView):
@@ -57,11 +70,21 @@ class CustomersUpdateView(UpdateView):
     template_name = "management_email/customers_form.html"
     success_url = reverse_lazy("management_email:customers_list")
 
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Customers.objects.all()
+        return Customers.objects.filter(owner=self.request.user)
+
 
 class CustomersDeleteView(DeleteView):
     model = Customers
     template_name = "management_email/customers_confirm_delete.html"
     success_url = reverse_lazy("management_email:customers_list")
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Customers.objects.all()
+        return Customers.objects.filter(owner=self.request.user)
 
 
 class MessageCreateView(CreateView):
@@ -75,6 +98,11 @@ class MessageListView(ListView):
     model = Message
     template_name = "management_email/message_list.html"
 
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Message.objects.all()
+        return Message.objects.filter(owner=self.request.user)
+
 
 class MessageDetailView(DetailView):
     model = Message
@@ -86,6 +114,7 @@ class MessageUpdateView(UpdateView):
     form_class = MessageForm
     template_name = "management_email/message_form.html"
     success_url = reverse_lazy("management_email:message_list")
+    permission_required = 'management_email.change_message'
 
 
 class MessageDeleteView(DeleteView):
@@ -112,10 +141,21 @@ class MailingListView(ListView):
     model = Mailing
     template_name = "management_email/mailing_list.html"
 
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Mailing.objects.all()
+        return Mailing.objects.filter(owner=self.request.user)
+
 
 class MailingDetailView(DetailView):
     model = Mailing
     template_name = "management_email/mailing_detail.html"
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        if not (self.request.user.is_staff or obj.owner == self.request.user):
+            raise PermissionDenied  # Отказать доступ
+        return obj
 
 
 class MailingUpdateView(UpdateView):
@@ -123,12 +163,14 @@ class MailingUpdateView(UpdateView):
     form_class = MailingForm
     template_name = "management_email/mailing_form.html"
     success_url = reverse_lazy("management_email:mailing_list")
+    permission_required = 'management_email.change_mailing'
 
 
 class MailingDeleteView(DeleteView):
     model = Mailing
     template_name = "management_email/mailing_confirm_delete.html"
     success_url = reverse_lazy("management_email:mailing_list")
+    permission_required = 'management_email.delete_mailing'
 
 
 class SendMailingView(View):
