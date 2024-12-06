@@ -30,6 +30,9 @@ class Message(models.Model):
         max_length=150, verbose_name="Тема письма", help_text="Введите тему письма"
     )
     content = models.TextField(blank=True, null=True, help_text="Введите текст письма")
+    owner = models.ForeignKey(User, verbose_name="Владелец",
+                              help_text="Укажите владельца ", blank=True, null=True,
+                              on_delete=models.SET_NULL, related_name='messages',)
 
     def __str__(self):
         return self.heading
@@ -67,7 +70,6 @@ class Mailing(models.Model):
         verbose_name_plural = "Рассылки"
         permissions = [
             ("can_cancel_mailing", "Can cancel mailing"),
-            ("can_blok_user", "Can blok user"),
         ]
 
     def send_mailing(self):

@@ -6,7 +6,7 @@ from .forms import CustomersForm, MailingForm, MessageForm
 from django.shortcuts import render
 from django.core.mail import send_mail
 from django.utils import timezone
-
+from django.http import HttpResponseForbidden
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.views import View
@@ -93,6 +93,13 @@ class MessageCreateView(CreateView):
     template_name = "management_email/message_form.html"
     success_url = reverse_lazy("management_email:message_list")
 
+    def form_valid(self, form):
+        message = form.save()
+        user = self.request.user
+        message.owner = user
+        message.save()
+        return super().form_valid(form)
+
 
 class MessageListView(ListView):
     model = Message
@@ -108,19 +115,31 @@ class MessageDetailView(DetailView):
     model = Message
     template_name = "management_email/message_detail.html"
 
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Message.objects.all()
+        return Message.objects.filter(owner=self.request.user)
+
 
 class MessageUpdateView(UpdateView):
     model = Message
     form_class = MessageForm
     template_name = "management_email/message_form.html"
     success_url = reverse_lazy("management_email:message_list")
-    permission_required = 'management_email.change_message'
+
+    def test_func(self):
+        message = self.get_object()  # Получаем текущий объект
+        return self.request.user == message.owner
 
 
 class MessageDeleteView(DeleteView):
     model = Message
     template_name = "management_email/message_confirm_delete.html"
     success_url = reverse_lazy("management_email:message_list")
+
+    def test_func(self):
+        message = self.get_object()  # Получаем текущий объект
+        return self.request.user == message.owner
 
 
 class MailingCreateView(CreateView):
@@ -163,14 +182,12 @@ class MailingUpdateView(UpdateView):
     form_class = MailingForm
     template_name = "management_email/mailing_form.html"
     success_url = reverse_lazy("management_email:mailing_list")
-    permission_required = 'management_email.change_mailing'
 
 
 class MailingDeleteView(DeleteView):
     model = Mailing
     template_name = "management_email/mailing_confirm_delete.html"
     success_url = reverse_lazy("management_email:mailing_list")
-    permission_required = 'management_email.delete_mailing'
 
 
 class SendMailingView(View):
@@ -183,6 +200,28 @@ class SendMailingView(View):
         mailing.save()  # Сохраняем изменения в модели
 
         return redirect(reverse("management_email:mailing_list"))  # Перенаправление после отправки
+
+
+class CancelMailingView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        mailing = get_object_or_404(Mailing, pk=pk)
+        if not request.user.has_perm('management_email.can_cancel_mailing'):
+            return HttpResponseForbidden("У вас нет прав для отключения рассылки.")
+            # Логика отключения рассылки
+        mailing.status = "завершена"
+        mailing.save()
+        return redirect("management_email:mailing_list")
+
+
+class BlokMailingView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        mailing = get_object_or_404(Mailing, pk=pk)
+        if not request.user.has_perm('management_email.can_blok_user'):
+            return HttpResponseForbidden("У вас нет прав для отключения рассылки.")
+            # Логика отключения рассылки
+        mailing.status = "завершена"
+        mailing.save()
+        return redirect("management_email:mailing_list")
 
 
 class MailingattemptListView(ListView):

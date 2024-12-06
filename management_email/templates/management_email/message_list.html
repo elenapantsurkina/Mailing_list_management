@@ -35,26 +35,20 @@ th, td {
     <tr>
         <th scope="col" >Тема письма</th>
         <th scope="col">Текст письма</th>
+        <th scope="col">Действия</th>
     </tr>
 
-        {% for message in messages %}
-
+    {% for message in object_list %}
     <tr>
-
         <td style="width: 20vh;">{{ message.heading }}</td>
         <td>{{ message.content }}</td>
-
-        <td class="text-end" style="width: 20vh;">
-
+        <td>
             <a href="{% url 'management_email:message_update' message.pk %}" class="btn btn-sm btn-secondary ml-3">Редактировать</a>
             <a href="{% url 'management_email:message_delete' message.pk %}" class="btn btn-sm btn-danger ml-1">Удалить</a>
-
         </td>
 
-        <td class="text-end" style="width: 20vh;"></td>
-
     </tr>
-        {% endfor %}
+    {% endfor %}
 
 </table>
 </body>

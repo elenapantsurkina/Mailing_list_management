@@ -1,6 +1,6 @@
 from audioop import reverse
 from django.contrib.auth.decorators import login_required
-from django.views.generic import CreateView
+from django.views.generic import CreateView,View
 from users.models import User
 from users.forms import UserRegisterForm
 from django.urls import reverse_lazy
@@ -10,6 +10,8 @@ from config.settings import EMAIL_HOST_USER
 from django.shortcuts import get_object_or_404, redirect, render
 from management_email.models import Mailingattempt
 from .services import get_mailing_statistics
+from django.http import HttpResponseForbidden
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class UserCreateView(CreateView):
@@ -34,6 +36,17 @@ class UserCreateView(CreateView):
         )
 
         return super().form_valid(form)
+
+
+class UserBlokView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        if not request.user.has_perm('users.can_blok_user'):
+            return HttpResponseForbidden("У вас нет прав для отключения рассылки.")
+            # Логика ,блокировки пользователя
+        user.is_active = not user.is_active
+        user.save()
+        return redirect("users:users")
 
 
 def email_verification(request, token):

@@ -30,7 +30,7 @@ th, td {
     <div class="text-center mb-3">
         <a href="{% url 'management_email:customers_create' %}" class="btn btn-primary mb-3">Создать новый объект</a>
     </div>
-        {% endif%}
+    {% endif%}
 
 <table>
     <tr>
@@ -39,18 +39,18 @@ th, td {
         <th scope="col">Комментарий</th>
         <th scope="col">Действия</th>
     </tr>
-        {% for customers in customerss %}
-        <tr>
-            <td scope="col" >{{customers.email}}</td>
-            <td scope="col">{{customers.name}}</td>
-            <td scope="col">{{customers.comment}}</td>
-            <td>
-                <a href="{% url 'management_email:customers_detail' customers.pk %}" class="btn btn-sm btn-secondary ml-3">Просмотр</a>
-                <a href="{% url 'management_email:customers_update' customers.pk %}" class="btn btn-sm btn-secondary ml-3">Редактировать</a>
-                <a href="{% url 'management_email:customers_delete' customers.pk %}" class="btn btn-sm btn-danger ml-1">Удалить</a>
-            </td>
-        </tr>
-        {% endfor %}
+    {% for customers in object_list %}
+    <tr>
+        <td scope="col" >{{customers.email}}</td>
+        <td scope="col">{{customers.name}}</td>
+        <td scope="col">{{customers.comment}}</td>
+        <td>
+            <a href="{% url 'management_email:customers_detail' customers.pk %}" class="btn btn-sm btn-secondary ml-3">Просмотр</a>
+            <a href="{% url 'management_email:customers_update' customers.pk %}" class="btn btn-sm btn-secondary ml-3">Редактировать</a>
+            <a href="{% url 'management_email:customers_delete' customers.pk %}" class="btn btn-sm btn-danger ml-1">Удалить</a>
+        </td>
+    </tr>
+    {% endfor %}
 </table>
 </body>
 {% endblock %}
