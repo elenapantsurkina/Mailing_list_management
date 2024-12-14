@@ -12,6 +12,7 @@ from django.core.exceptions import PermissionDenied
 from django.views import View
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from users.services import get_mailing_statistics
 
 
 def home(request):
@@ -213,52 +214,77 @@ class CancelMailingView(LoginRequiredMixin, View):
         return redirect("management_email:mailing_list")
 
 
-class BlokMailingView(LoginRequiredMixin, View):
-    def post(self, request, pk):
-        mailing = get_object_or_404(Mailing, pk=pk)
-        if not request.user.has_perm('management_email.can_blok_user'):
-            return HttpResponseForbidden("У вас нет прав для отключения рассылки.")
-            # Логика отключения рассылки
-        mailing.status = "завершена"
-        mailing.save()
-        return redirect("management_email:mailing_list")
-
-
-class MailingattemptListView(ListView):
+class MailingattemptListView(LoginRequiredMixin, ListView):
     model = Mailingattempt
     template_name = "management_email/mailingattempt_list.html"
+    context_object_name = 'object_list'  # Имя списка для передачи в шаблон
 
-    def send_mail_for_clients(mailing_id):
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(name="Manager").exists():
+            pass
+        self.send_mail_for_clients()
+        return Mailingattempt.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        total_mailings = Mailing.objects.count()  # Общее количество рассылок
+        active_mailings = Mailing.objects.filter(status='запущена').count()  # Количество активных рассылок
+        unique_recipients = Customers.objects.distinct().count()  # Количество уникальных получателей
+
+        context['total_mailings'] = total_mailings,
+        context['active_mailings'] = active_mailings,
+        context['unique_recipients'] = unique_recipients,
+
+        context['statistics'] = get_mailing_statistics(self.request.user)
+        return context
+
+    def send_mail_for_clients(self):
         # Получаем объект рассылки по идентификатору
-        mailing = Mailing.objects.get(id=mailing_id)
-        # Получаем список клиентов из ManyToMany поля
-        customers = mailing.customers.all()
-        total_attempts = mailing.mailings.count()
+        user = self.request.user
+        mailings = Mailing.objects.filter(owner=user.id)
 
-        for customer in customers:
-            try:
-                response = send_mail(
-                    subject=mailing.message.subject,
-                    message=mailing.message.body,
-                    from_email=mailing.message.from_email,
-                    recipient_list=[customer.email],
-                    fail_silently=False,
+        # Получаем список клиентов из ManyToMany поля
+        customers = [mailing.customers.all() for mailing in mailings]
+        total_attempts = 0
+        successful_attempts = 0
+        failed_attempts = 0
+
+        for mailing, customer_list in zip(mailings, customers):
+
+            for customer in customer_list:
+                total_attempts += 1
+                try:
+                    response = send_mail(
+                        subject=mailing.message.subject,
+                        message=mailing.message.body,
+                        from_email='elenapantsurkina@yandex.ru',
+                        recipient_list=[customer.email],
+                        fail_silently=False,
+                    )
+                    successful_attempts += 1
+
+                    # Создаем запись о попытке рассылки
+                    Mailingattempt.objects.create(
+                        mailing=mailing,
+                        status="успешно",
+                        mail_server_response=str(response),
+                        date_attempt=timezone.now(),
+                    )
+                except Exception as e:
+                    failed_attempts += 1
+                    # Создаем запись о неудачной попытке рассылки
+                    Mailingattempt.objects.create(
+                        mailing=mailing,
+                        status="неуспешно",
+                        mail_server_response=str(e),
+                        date_attempt=timezone.now(),
                     )
 
-            # Создаем запись о попытке рассылки
-                Mailingattempt.objects.create(
-                    mailing=mailing,
-                    status="успешно",
-                    mail_server_response=str(response),
-                    date_attempt=timezone.now(),
-                    total_attempts=total_attempts + 1,
-                )
-            except Exception as e:
-                # Создаем запись о неудачной попытке рассылки
-                Mailingattempt.objects.create(
-                    mailing=mailing,
-                    status="неуспешно",
-                    mail_server_response=str(e),
-                    date_attempt=timezone.now(),
-                    total_attempts=total_attempts + 1
-                )
+        stats = {
+            'total_attempts': total_attempts,
+            'successful_attempts': successful_attempts,
+            'failed_attempts': failed_attempts,
+        }
+        return stats
+

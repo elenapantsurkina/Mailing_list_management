@@ -81,7 +81,7 @@ class Mailing(models.Model):
         recipients = [customer.email for customer in self.customers.all()]  # извлекаем email из связанных Customers
 
         # Отправка писем
-        send_mail(subject, content, 'from@example.com', recipients)
+        send_mail(subject, content, 'elenapantsurkina@yandex.ru', recipients)
 
         # Обновление статуса рассылки
         self.status = "запущена"

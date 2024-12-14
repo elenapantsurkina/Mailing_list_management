@@ -26,10 +26,11 @@ th, td {
 
 <h3 class="text-center w-100">Список попыток рассылок</h3>
 
-<div class="text-center mb-4">
-    <p>Успешные попытки: {{ statistics.successful_attempts }}</p>
-    <p>Неуспешные попытки: {{ statistics.unsuccessful_attempts }}</p>
-    <p>Всего отправленных сообщений: {{ statistics.sent_messages }}</p>
+<div class="row text-center">
+    <h1>Сервис управления почтовыми рассылками.</h1>
+    <p>Общее количество рассылок: {{ total_mailings }}</p>
+    <p>Количество активных рассылок: {{ active_mailings }}</p>
+    <p>Количество уникальных получателей: {{ unique_recipients }}</p>
 </div>
 
 <table>
