@@ -7,14 +7,16 @@ from django.shortcuts import render
 from django.core.mail import send_mail
 from django.utils import timezone
 from django.http import HttpResponseForbidden
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.views import View
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from users.services import get_mailing_statistics
+from django.views.decorators.cache import cache_page
 
 
+@cache_page(60 * 15)
 def home(request):
     total_mailings = Mailing.objects.count()  # Общее количество рассылок
     active_mailings = Mailing.objects.filter(status='запущена').count()  # Количество активных рассылок
@@ -287,4 +289,3 @@ class MailingattemptListView(LoginRequiredMixin, ListView):
             'failed_attempts': failed_attempts,
         }
         return stats
-

@@ -22,6 +22,7 @@ from management_email.views import (
     MailingUpdateView,
     MailingDeleteView, SendMailingView)
 from management_email.views import MailingattemptListView
+from django.views.decorators.cache import cache_page
 
 
 app_name = ManagementEmailConfig.name
@@ -30,7 +31,7 @@ urlpatterns = [
     path("", home, name="home"),
     path(
         "management_email/customers_list/",
-        CustomersListView.as_view(),
+        cache_page(60)(CustomersListView.as_view()),
         name="customers_list",
     ),
     path(
@@ -54,7 +55,7 @@ urlpatterns = [
         name="customers_delete",
     ),
     path(
-        "management_email/message_list/", MessageListView.as_view(), name="message_list"
+        "management_email/message_list/", cache_page(60)(MessageListView.as_view()), name="message_list"
     ),
     path(
         "management_email/message/<int:pk>/",
@@ -77,7 +78,7 @@ urlpatterns = [
         name="message_delete",
     ),
     path(
-        "management_email/mailing_list/", MailingListView.as_view(), name="mailing_list"
+        "management_email/mailing_list/", cache_page(60)(MailingListView.as_view()), name="mailing_list"
     ),
     path(
         "management_email/mailing_detail/<int:pk>/",
@@ -101,6 +102,7 @@ urlpatterns = [
     ),
     path('mailings/<int:pk>/send/', SendMailingView.as_view(), name='send_mailing'),
     path(
-        "management_email/mailingattempt_list/", MailingattemptListView.as_view(), name="mailingattempt_list"
+        "management_email/mailingattempt_list/",
+        cache_page(60)(MailingattemptListView.as_view()), name="mailingattempt_list"
     ),
 ]
